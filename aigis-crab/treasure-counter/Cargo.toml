@@ -1,0 +1,17 @@
+[package]
+name = "treasure-counter"
+version = "1.0.0"
+author.workspace = true
+edition.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = { workspace = true }
+web-sys = { workspace = true, features = ["console"] }
+serde.workspace = true
+serde-wasm-bindgen.workspace = true
+aikipedia = { path = "../aikipedia" }
+chrono.workspace = true

@@ -1,0 +1,14 @@
+[workspace]
+members = ["scavenger", "treasure-counter", "aikipedia"]
+
+[workspace.package]
+author = "Deltalice"
+edition = "2021"
+
+[workspace.dependencies]
+wasm-bindgen = "0.2.48"
+web-sys = "0.3.36"
+serde = { version = "1.0.160", features = ["derive"] }
+serde-wasm-bindgen = "0.5.0"
+itertools = "0.10.5"
+chrono = "0.4.24"
