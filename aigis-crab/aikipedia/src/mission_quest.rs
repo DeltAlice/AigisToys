@@ -6,9 +6,10 @@ use wasm_bindgen::JsValue;
 pub struct MissionQuestMap(HashMap<u32, u32>);
 
 impl MissionQuestMap {
-    pub fn get_mission_id(&self, quest_id: u32) -> Result<&u32> {
+    pub fn get_mission_id(&self, quest_id: u32) -> Result<u32> {
         self.0
             .get(&quest_id)
+            .copied()
             .ok_or_else(|| format!("Failed to find mission for quest {}", quest_id))
     }
     pub fn extend(&mut self, other: MissionQuestMap) {

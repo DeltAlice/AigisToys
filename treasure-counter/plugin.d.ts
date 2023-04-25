@@ -1,18 +1,23 @@
+import moment from 'moment'
+
 export interface TreasureInfo {
     idx: number,
     num: number,
 }
-
-export interface Record {
+export interface TreasureRecord {
     quest_id: number,
-    treasures: Array<TreasureInfo>,
-    time: string,
-    error: string
+    treasures: Array<TreasureInfo>
+    timestamp: string,
+}
+
+export interface ErrorRecord {
+    error: string,
+    timestamp: string
 }
 
 export interface Message {
     kind: string,
-    data: any,
+    data: TreasureRecord | ErrorRecord | Array<TreasureRecord | ErrorRecord> | Array<String> | null,
 }
 
 interface AigisGameDataService {

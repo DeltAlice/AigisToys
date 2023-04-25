@@ -1,4 +1,4 @@
-use std::collections::LinkedList;
+use std::collections::VecDeque;
 
 use aikipedia::{Aikipedia, QuestResult};
 use serde::Serialize;
@@ -12,7 +12,7 @@ type Result<T> = std::result::Result<T, String>;
 #[wasm_bindgen]
 pub struct TreasureCounter {
     aikipedia: Aikipedia,
-    records: LinkedList<Record>,
+    records: VecDeque<Record>,
 }
 
 #[wasm_bindgen]
@@ -21,7 +21,7 @@ impl TreasureCounter {
     pub fn new() -> Self {
         Self {
             aikipedia: Aikipedia::default(),
-            records: LinkedList::new(),
+            records: VecDeque::new(),
         }
     }
 
@@ -43,6 +43,7 @@ impl TreasureCounter {
     }
 
     pub fn check_treasures(&mut self, data: JsValue) -> Result<JsValue> {
+        let timestamp = chrono::Local::now().format("%m/%d %H:%M:%S").to_string();
         let result: QuestResult = data.try_into()?;
         let treasures = DataRepo::load_from(&self.aikipedia)
             .and_then(|repo| repo.check_quest_treasures(result.quest_id()))
@@ -60,6 +61,7 @@ impl TreasureCounter {
         self.records.push_front(Record {
             quest_id: result.quest_id(),
             treasures,
+            timestamp,
         });
         serde_wasm_bindgen::to_value(self.records.front().unwrap()).map_err(|err| err.to_string())
     }
@@ -79,4 +81,5 @@ struct TreasureInfo {
 struct Record {
     quest_id: u32,
     treasures: Vec<TreasureInfo>,
+    timestamp: String,
 }

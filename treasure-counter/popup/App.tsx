@@ -5,10 +5,9 @@ import {
   Center, Card,
   CardHeader, CardBody,
 } from '@chakra-ui/react'
-import { TreasureItems } from './history'
+import { TreasureItems } from './TreasureItems'
 import { Help } from './help'
-import { FatalError } from './playerInterface'
-
+import { FatalError } from './FatalError'
 
 const theme = extendTheme({
   fonts: {

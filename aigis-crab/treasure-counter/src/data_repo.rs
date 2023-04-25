@@ -16,15 +16,15 @@ impl<'a> DataRepo<'a> {
         let quests = aikipedia
             .quests_info
             .as_ref()
-            .ok_or_else(|| "Quests not loaded".to_string())?;
+            .ok_or_else(|| "Quests are not loaded".to_string())?;
         let mission_quest = aikipedia
             .mission_quest
             .as_ref()
-            .ok_or_else(|| "MissionQuest not loaded".to_string())?;
+            .ok_or_else(|| "MissionQuest are not loaded".to_string())?;
         let maps = aikipedia
             .maps
             .as_ref()
-            .ok_or_else(|| "Maps not loaded".to_string())?;
+            .ok_or_else(|| "Maps are not loaded".to_string())?;
         Ok(Self {
             quests,
             mission_quest,
