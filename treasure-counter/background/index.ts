@@ -8,7 +8,6 @@ let fatalErrors: Array<String> = []
 let errHistory: Array<ErrorRecord> = []
 
 function feedData(callback: (counter: TreasureCounter) => void) {
-    console.log(crab)
     crab.then(module => {
         if (counter === null) {
             counter = new module.TreasureCounter()
@@ -23,16 +22,27 @@ export function run(pluginHelper: PluginHelper) {
             feedData(counter => counter.register_quests(data))
         } catch (err) {
             fatalErrors.push(err as string)
+            pluginHelper.sendMessage({ kind: 'fatal-error', data: err as string }, (response: any) => { })
         }
 
     })
 
     pluginHelper.aigisGameDataService.subscribe(file => file.includes('MissionQuestList'), (url, data) => {
         try {
-            console.log("index ", data.Label, data.Data.Contents)
             feedData(counter => counter.register_mission_quest(data.Data.Contents))
         } catch (err) {
             fatalErrors.push(err as string)
+            pluginHelper.sendMessage({ kind: 'fatal-error', data: err as string }, (response: any) => { })
+        }
+    })
+
+    pluginHelper.aigisGameDataService.subscribe('HistoryMissionConfig.atb', (url, data) => {
+        try {
+            console.log("HistoryMissionConfig.atb", data)
+            feedData(counter => counter.register_mission_quest(data.Contents))
+        } catch (err) {
+            fatalErrors.push(err as string)
+            pluginHelper.sendMessage({ kind: 'fatal-error', data: err as string }, (response: any) => { })
         }
     })
 
@@ -48,6 +58,7 @@ export function run(pluginHelper: PluginHelper) {
             })
         } catch (err) {
             fatalErrors.push(err as string)
+            pluginHelper.sendMessage({ kind: 'fatal-error', data: err as string }, (response: any) => { })
         }
     })
     pluginHelper.aigisGameDataService.subscribe('quest-start', (url, data) => {
@@ -69,7 +80,7 @@ export function run(pluginHelper: PluginHelper) {
         switch (msg.kind) {
             case 'get-history':
                 if (fatalErrors.length > 0) {
-                    pluginHelper.sendMessage({ kind: 'fatalError', data: fatalErrors }, (response: any) => { })
+                    pluginHelper.sendMessage({ kind: 'fatal-error-list', data: fatalErrors }, (response: any) => { })
                 }
                 let history = counter?.history() as Array<TreasureRecord | ErrorRecord>
                 history = history.concat(errHistory)

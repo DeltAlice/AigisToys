@@ -3,15 +3,39 @@ import { useEffect, useState } from "react";
 import { preloadImages } from "./perloadImages";
 import { mailbox } from "./playerInterface";
 import { ErrorRecord, Message, TreasureRecord } from "../plugin";
+import axios from 'axios'
 
-
+let cachedImages = preloadImages
 
 export const iconUrl = 'https://aigisapi.pigtv.moe/static/ico/0'
-function getImageSrc(idx: number): string {
-    if (preloadImages[idx]) {
-        return `data:image/png;base64,${preloadImages[idx]}`
+function getImageUrl(idx: number): string {
+    if (idx >= 1000 && idx < 2000) {
+        return `${iconUrl}/_${idx}.png`
+    } else if (idx - 1000000 < 2000 && idx - 1000000 >= 1000) {
+        idx = idx - 1000000
+    }
+    return `${iconUrl}/${idx}.png`
+}
+
+async function downloadAllImages(treasureIds: Array<number>): Promise<void[]> {
+    return Promise.all(treasureIds.map(async idx => {
+        if (!cachedImages[idx]) {
+            let url = getImageUrl(idx)
+            let res = await axios.get(url, { responseType: 'arraybuffer' })
+            if (res.status == 200) {
+                let base64 = Buffer.from(res.data, 'binary').toString('base64')
+                cachedImages[idx] = base64
+            }
+        }
+    }))
+}
+
+
+function getImage(idx: number) {
+    if (cachedImages[idx]) {
+        return `data:image/png;base64,${cachedImages[idx]}`
     } else {
-        return `${iconUrl}/${idx >= 1000 && idx < 2000 ? '_' : ''}${idx}.png`
+        return undefined
     }
 }
 
@@ -28,17 +52,31 @@ function getIconDesc(idx: number) {
 export function TreasureItems() {
     const [history, setHistory] = useState(new Array<TreasureRecord | ErrorRecord>)
     useEffect(() => {
-        mailbox.listen(msg => {
+        mailbox.listen(async msg => {
+            console.log('recv in items', msg.data)
             switch (msg.kind) {
+                // @ts-expect-error
                 case 'record':
+                    await downloadAllImages((msg.data as TreasureRecord).treasures.map(t => t.idx))
+                // fallthrough intentionally
                 case 'err-record':
                     setHistory([msg.data as TreasureRecord | ErrorRecord, ...history])
                     break;
                 default: break;
             }
         })
-        mailbox.send({ kind: 'get-history', data: null }, (msg: Message) => {
+        mailbox.send({ kind: 'get-history', data: null }, async (msg: Message) => {
             if (msg.kind = 'history') {
+                await downloadAllImages(
+                    Array.from(
+                        new Set( // remove duplicates
+                            ((msg.data as Array<TreasureRecord | ErrorRecord>)
+                                .filter(r => (r as TreasureRecord).treasures != null)
+                                .map(r => (r as TreasureRecord).treasures.map(t => t.idx)))
+                                .flat()
+                        )
+                    )
+                )
                 setHistory(msg.data as Array<TreasureRecord | ErrorRecord>)
             }
         })
@@ -54,7 +92,7 @@ export function TreasureItems() {
                 <Stack direction={['column', 'row']}>
                     {(record as TreasureRecord).treasures.map((treasure, idx) => {
                         return <Image alt={getIconDesc(treasure.idx)} key={`${record.timestamp}-${idx}`}
-                            src={getImageSrc(treasure.idx)}>
+                            src={getImage(treasure.idx)}>
                         </Image>
                     })}
                 </Stack>}

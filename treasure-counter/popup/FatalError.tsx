@@ -8,7 +8,12 @@ export function FatalError() {
     useEffect(() => {
         mailbox.listen(msg => {
             switch (msg.kind) {
-                case 'fatal-error': setErrors(msg.data as Array<string>)
+                case 'fatal-error':
+                    setErrors([...errors, msg.data as string])
+                    break;
+                case 'fatal-error-list':
+                    setErrors(msg.data as Array<string>)
+                    break;
             }
         })
     }, [])

@@ -17,7 +17,7 @@ export interface ErrorRecord {
 
 export interface Message {
     kind: string,
-    data: TreasureRecord | ErrorRecord | Array<TreasureRecord | ErrorRecord> | Array<String> | null,
+    data: TreasureRecord | ErrorRecord | Array<TreasureRecord | ErrorRecord> | Array<String> | string | null,
 }
 
 interface AigisGameDataService {

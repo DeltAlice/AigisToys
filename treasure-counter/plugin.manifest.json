@@ -1,0 +1,15 @@
+{
+    "pluginName": "宝物猎人",
+    "author": "Betalice",
+    "version": "0.0.0",
+    "description": " Some people call it junk, me, I call them treasure.",
+    "entry": "index.html",
+    "background": "background.bundle.js",
+    "windowOption": {
+        "width": 720,
+        "height": 480,
+        "title": "宝物猎人",
+        "minimizable": true,
+        "maximizable": false
+    }
+}
