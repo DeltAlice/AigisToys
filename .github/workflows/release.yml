@@ -41,6 +41,6 @@ jobs:
           7z a -tzip -sdel treasure-counter.zip ./dist/treasure-counter
 
       - name: Release
-      - uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1
         with:
           bodyFile: "treasure-counter.zip"
