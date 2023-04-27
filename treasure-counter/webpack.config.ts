@@ -8,7 +8,7 @@ const backgrounConfig: webpack.Configuration = {
     mode: 'production',
     entry: path.resolve(__dirname, 'background', 'index.ts'),
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, '..', 'dist', 'treasure-counter'),
         filename: 'background.bundle.js',
         library: "treasure",
         libraryTarget: "umd"
@@ -57,7 +57,7 @@ const popupConfig: webpack.Configuration = {
     mode: 'development',
     entry: path.resolve(__dirname, 'popup', 'index.tsx'),
     output: {
-        path: path.resolve(__dirname, 'dist'),
+        path: path.resolve(__dirname, '..', 'dist', 'treasure-counter'),
         filename: 'popup.bundle.js',
 
     },

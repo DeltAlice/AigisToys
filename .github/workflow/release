@@ -1,0 +1,57 @@
+on:
+  push:
+    branches: [ main ]
+
+name: Release
+
+env:
+  RELEASE_BIN: wasm-pack
+  RELEASE_DIR: artifacts
+  GITHUB_REF: '${{ github.ref }}'
+  WINDOWS_TARGET: x86_64-pc-windows-msvc
+  MACOS_TARGET: x86_64-apple-darwin
+  LINUX_AMD64_TARGET: x86_64-unknown-linux-musl
+  LINUX_ARM64_TARGET: aarch64-unknown-linux-musl
+
+  # Space separated paths to include in the archive.
+  RELEASE_ADDS: README.md LICENSE-APACHE
+
+jobs:
+  build:
+    name: Build treasure counter
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          target: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Build
+        run: |
+          cd treasure-counter
+          npm install
+          npm run build
+
+      - name: Zip package
+        run: 7z a -tzip treasure-counter.zip ./dist/treasure-counter -sdl
+
+  release:
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: false
+          title: "AigisToys"
+          files: |
+            dist/*

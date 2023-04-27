@@ -6,7 +6,7 @@ import {
   CardHeader, CardBody,
 } from '@chakra-ui/react'
 import { TreasureItems } from './TreasureItems'
-import { Help } from './help'
+import { Help } from './Help'
 import { FatalError } from './FatalError'
 
 const theme = extendTheme({
