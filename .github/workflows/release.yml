@@ -36,7 +36,7 @@ jobs:
           npm run build
 
       - name: Zip package
-        run: 7z a -tzip treasure-counter.zip ./dist/treasure-counter -sdl
+        run: 7z a -tzip -sdel treasure-counter.zip ./dist/treasure-counter
 
   release:
     needs: build
