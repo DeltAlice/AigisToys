@@ -6,7 +6,7 @@ name: Release
 
 env:
   CARGO_TERM_COLOR: always
-  RELEASE_ADDS: README.md LICENSE-APACHE
+  RELEASE_ADDS: README.md LICENSE
 
 jobs:
   build:
@@ -39,6 +39,7 @@ jobs:
         run: 7z a -tzip treasure-counter.zip ./dist/treasure-counter -sdl
 
   release:
+    needs: build
     name: Release package
     runs-on: ubuntu-latest
     steps:
