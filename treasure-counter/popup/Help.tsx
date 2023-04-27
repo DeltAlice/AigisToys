@@ -27,7 +27,7 @@ export const Help = () => (<Accordion allowToggle>
                     <Heading as='h4' size='sm'>
                         显示红色错误提醒
                     </Heading>
-                    <Text fontSize='sm'>插件出现了问题，请带着错误提示去<Link href='https://github.com/DogReactor/AigisPlugins' isExternal>
+                    <Text fontSize='sm'>插件出现了问题，请带着错误提示去<Link href='https://github.com/DogReactor/AigisToys' isExternal>
                         项目主页<ExternalLinkIcon mx='2px' /> </Link>提一个issue，或者在母猪群@∑（如果还没被毁酱踢出群）/在NGA千年楼里@Brecruiser
                     </Text>
                 </ListItem>

@@ -55,9 +55,9 @@ export function TreasureItems() {
         mailbox.listen(async msg => {
             console.log('recv in items', msg.data)
             switch (msg.kind) {
-                // @ts-expect-error
                 case 'record':
-                    await downloadAllImages((msg.data as TreasureRecord).treasures.map(t => t.idx))
+                    downloadAllImages((msg.data as TreasureRecord).treasures.map(t => t.idx)).finally(() => setHistory([msg.data as TreasureRecord | ErrorRecord, ...history]))
+                    break;
                 // fallthrough intentionally
                 case 'err-record':
                     setHistory([msg.data as TreasureRecord | ErrorRecord, ...history])
@@ -67,7 +67,7 @@ export function TreasureItems() {
         })
         mailbox.send({ kind: 'get-history', data: null }, async (msg: Message) => {
             if (msg.kind = 'history') {
-                await downloadAllImages(
+                downloadAllImages(
                     Array.from(
                         new Set( // remove duplicates
                             ((msg.data as Array<TreasureRecord | ErrorRecord>)
@@ -76,8 +76,7 @@ export function TreasureItems() {
                                 .flat()
                         )
                     )
-                )
-                setHistory(msg.data as Array<TreasureRecord | ErrorRecord>)
+                ).finally(() => setHistory(msg.data as Array<TreasureRecord | ErrorRecord>))
             }
         })
     }, [])
