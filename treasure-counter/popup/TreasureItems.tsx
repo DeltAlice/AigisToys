@@ -21,10 +21,14 @@ async function downloadAllImages(treasureIds: Array<number>): Promise<void[]> {
     return Promise.all(treasureIds.map(async idx => {
         if (!cachedImages[idx]) {
             let url = getImageUrl(idx)
-            let res = await axios.get(url, { responseType: 'arraybuffer' })
-            if (res.status == 200) {
-                let base64 = Buffer.from(res.data, 'binary').toString('base64')
-                cachedImages[idx] = base64
+            try {
+                let res = await axios.get(url, { responseType: 'arraybuffer' })
+                if (res.status == 200) {
+                    let base64 = Buffer.from(res.data, 'binary').toString('base64')
+                    cachedImages[idx] = base64
+                }
+            } catch (err) {
+                // omit errors
             }
         }
     }))
@@ -44,6 +48,8 @@ function getIconDesc(idx: number) {
         case 3001: return '收集物×1'
         case 3002: return '收集物×3'
         case 3003: return '收集物×5'
+        case 23203: return '勋章×3'
+        case 23205: return '勋章×5'
         default: return `${idx >= 1000 && idx < 2000 ? '_' : ''}${idx}.png`
     }
 }
@@ -52,11 +58,12 @@ function getIconDesc(idx: number) {
 export function TreasureItems() {
     const [history, setHistory] = useState(new Array<TreasureRecord | ErrorRecord>)
     useEffect(() => {
-        mailbox.listen(async msg => {
-            console.log('recv in items', msg.data)
+        mailbox.listen('TreasureItems', msg => {
             switch (msg.kind) {
                 case 'record':
-                    downloadAllImages((msg.data as TreasureRecord).treasures.map(t => t.idx)).finally(() => setHistory([msg.data as TreasureRecord | ErrorRecord, ...history]))
+                    downloadAllImages((msg.data as TreasureRecord).treasures
+                        .map(t => t.idx))
+                        .finally(() => setHistory(history => [msg.data as TreasureRecord | ErrorRecord, ...history]))
                     break;
                 // fallthrough intentionally
                 case 'err-record':
@@ -65,7 +72,7 @@ export function TreasureItems() {
                 default: break;
             }
         })
-        mailbox.send({ kind: 'get-history', data: null }, async (msg: Message) => {
+        mailbox.send({ kind: 'get-history', data: null }, (msg: Message) => {
             if (msg.kind = 'history') {
                 downloadAllImages(
                     Array.from(

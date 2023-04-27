@@ -6,7 +6,7 @@ import { mailbox } from './playerInterface'
 export function FatalError() {
     const [errors, setErrors] = useState(new Array<string>)
     useEffect(() => {
-        mailbox.listen(msg => {
+        mailbox.listen('FataError', msg => {
             switch (msg.kind) {
                 case 'fatal-error':
                     setErrors([...errors, msg.data as string])

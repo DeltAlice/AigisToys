@@ -84,7 +84,7 @@ export function run(pluginHelper: PluginHelper) {
                 }
                 let history = counter?.history() as Array<TreasureRecord | ErrorRecord>
                 history = history.concat(errHistory)
-                history.sort((a, b) => a.timestamp <= b.timestamp ? -1 : 1)
+                history.sort((a, b) => a.timestamp <= b.timestamp ? 1 : -1)
                 sendResponse({ kind: 'history', data: history })
                 break
             default:

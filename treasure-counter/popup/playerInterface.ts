@@ -3,7 +3,7 @@ import { Message, PluginHelper } from '../plugin'
 
 class Mailbox {
     private sender: Array<[Message, any]> = [];
-    private listener: Array<(msg: Message) => void> = [];
+    private listener = new Map<string, (msg: Message) => void>;
     private pluginHelper: PluginHelper | null = null
     public send(msg: Message, response?: any) {
         if (this.pluginHelper === null) {
@@ -12,12 +12,11 @@ class Mailbox {
             this.pluginHelper.sendMessage(msg, response)
         }
     }
-    public listen(callback: (msg: Message) => void) {
-        if (this.pluginHelper === null) {
-            this.listener.push(callback)
-        } else {
-            this.pluginHelper.onMessage(callback)
-        }
+    public listen(key: string, callback: (msg: Message) => void) {
+        // react-strict will trigger useEffect twice
+        // so we have to use a key to distinguish listener from different modules
+        this.listener.set(key, callback)
+
     }
     public setPluginHelper(pluginHelper: PluginHelper) {
         this.pluginHelper = pluginHelper
@@ -26,10 +25,11 @@ class Mailbox {
             this.pluginHelper?.sendMessage(msg, response)
         })
         this.sender = []
-        this.listener.forEach(callback => {
-            this.pluginHelper?.onMessage(callback)
+        this.pluginHelper?.onMessage(msg => {
+            this.listener.forEach(callback => {
+                callback(msg)
+            })
         })
-        this.listener = []
     }
 }
 
