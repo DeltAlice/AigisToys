@@ -10,10 +10,11 @@ env:
   RELEASE_ADDS: README.md LICENSE
 
 jobs:
-  build:
-    name: Build treasure counter
+  build-release:
+    name: Build and release package
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
@@ -29,23 +30,17 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+          
 
-      - name: Build
+      - name: Build treasure counter
         run: |
           cd treasure-counter
           npm install
           npm run build
+          cd ..
+          7z a -tzip -sdel treasure-counter.zip ./dist/treasure-counter
 
-      - name: Zip package
-        run: 7z a -tzip -sdel treasure-counter.zip ./dist/treasure-counter
-
-  release:
-    needs: build
-    name: Release package
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-    - uses: ncipollo/release-action@v1
-      with:
-        bodyFile: "treasure-counter.zip"
+      - name: Release
+      - uses: ncipollo/release-action@v1
+        with:
+          bodyFile: "treasure-counter.zip"
