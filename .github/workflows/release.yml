@@ -1,7 +1,4 @@
-on:
-  push:
-    tags:        
-      - v*
+
 
 name: Release
 
@@ -44,3 +41,6 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "treasure-counter.zip"
+          tag: "latest"
+          makeLatest: true
+          removeArtifacts: true
