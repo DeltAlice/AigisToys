@@ -43,4 +43,4 @@ jobs:
       - name: Release
         uses: ncipollo/release-action@v1
         with:
-          bodyFile: "treasure-counter.zip"
+          artifacts: "treasure-counter.zip"
